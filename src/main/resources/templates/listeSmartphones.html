@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/Layout">
+<link rel="stylesheet" type="text/css" href="webjars/bootstrap/4.3.1/css/bootstrap.min.css" />
+
+<head>
+    <meta charset="utf-8">
+    <title>Liste des Smartphones</title>
+</head>
+
+<body>
+    <div class="container mt-5"> <div class="card">
+            <div class="card-header">
+                Liste des Smartphones
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead> <tr>
+                            <th>ID</th>
+                            <th>Date</th> 
+                            <th>Marque</th>
+                            <th>Modele</th>
+                            <th>Ram</th>
+                            <th>Stockage</th>
+                            <th>Prix</th>
+                            <th>Action</th> </tr>
+                    </thead>
+                    <tbody> <tr th:each="s:${smartphones}">
+                            <td th:text="${s.id}"></td>
+                            <td th:text="${#dates.format(s.date, 'dd-MM-yyyy')}"></td>
+                            <td th:text="${s.marque}"></td>
+                            <td th:text="${s.modele}"></td>
+                            <td th:text="${s.ram}"></td>
+                            <td th:text="${s.stockage}"></td>
+                            <td th:text="${s.prix}"></td>
+                            <td><a class="btn btn-danger" onclick="return confirm('Etes-vous sûr ?')"
+                                    th:href="@{supprimerProduit(id=${p.idProduit})}">Supprimer</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+        </div>
+    </div>
+</body>
+
+</html>
