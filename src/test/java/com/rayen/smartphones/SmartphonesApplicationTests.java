@@ -47,5 +47,4 @@ class SmartphonesApplicationTests {
 	 System.out.println(s);
 	 }
 	}   
-
 }

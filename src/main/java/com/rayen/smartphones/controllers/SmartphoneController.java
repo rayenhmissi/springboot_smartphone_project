@@ -3,12 +3,14 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.rayen.smartphones.entities.Smartphone;
@@ -19,20 +21,24 @@ import com.rayen.smartphones.service.SmartphoneService;
 public class SmartphoneController {
     @Autowired
     SmartphoneService smartphoneService;
-   
-    @GetMapping("/ListeSmartphones")
-    public String listeSmartphones(ModelMap modelMap) {
-     List<Smartphone> smarts = smartphoneService.getAllSmartphones();
-     modelMap.addAttribute("smartphones", smarts);
-     return "listeSmartphones";
-    }
+    @RequestMapping("/ListeSmartphones") 
+ public String listeProduits(ModelMap modelMap, 
+ @RequestParam (name="page",defaultValue = "0") int page, 
+ @RequestParam (name="size", defaultValue = "2") int size) 
+ { 
+ Page<Smartphone> smarts = smartphoneService.getAllSmartphonesParPage(page, size); 
+ modelMap.addAttribute("smartphones", smarts); 
+ modelMap.addAttribute("pages", new int[smarts.getTotalPages()]);  
+ modelMap.addAttribute("currentPage", page);    
+ return "listeSmartphones";  
+ } 
     @GetMapping("/showCreate")
     public String showCreate() {
      return "createSmartphone";
     }
    
     @GetMapping("/saveSmartphone")
-    public String saveSmartphone(@ModelAttribute("produit") Smartphone smartphone,
+    public String saveSmartphone(@ModelAttribute("smartphone") Smartphone smartphone,
       @RequestParam("date") String date,
       ModelMap modelMap) throws ParseException {
    
@@ -41,20 +47,24 @@ public class SmartphoneController {
      Date dateCreation = dateformat.parse(String.valueOf(date));
      smartphone.setDate(dateCreation);
      Smartphone saveSmartphone = smartphoneService.saveSmartphone(smartphone);
-     String msg = "produit enregistré avec Id " + saveSmartphone.getId();
+     String msg = "smartphone enregistré avec Id " + saveSmartphone.getId();
      modelMap.addAttribute("msg", msg);
      return "createSmartphone";
     }
-   
-    @GetMapping("/supprimerSmartphone")
-    public String supprimerSmartphone(@RequestParam("id") Long id,
-      ModelMap modelMap) {
-     smartphoneService.deleteSmartphoneById(id);
-     List<Smartphone> smarts = smartphoneService.getAllSmartphones();
-     modelMap.addAttribute("produits", smarts);
-     return "listeSmartphones";
-    }
-   
+@RequestMapping("/supprimerSmartphone") 
+ public String supprimerSmartphone(@RequestParam("id") Long id, 
+ ModelMap modelMap, 
+ @RequestParam (name="page",defaultValue = "0") int page, 
+ @RequestParam (name="size", defaultValue = "2") int size) 
+ { 
+	 smartphoneService.deleteSmartphoneById(id); 
+	 Page<Smartphone> smarts = smartphoneService.getAllSmartphonesParPage(page, size); 
+	modelMap.addAttribute("smartphones", smarts);   
+	modelMap.addAttribute("pages", new int[smarts.getTotalPages()]);  
+	modelMap.addAttribute("currentPage", page);  
+	modelMap.addAttribute("size", size);  
+	return "listeSmartphones";  
+ }    
     @GetMapping("/modifierSmartphone")
     public String editerSmartphone(@RequestParam("id") Long id,
       ModelMap modelMap) {
@@ -70,8 +80,8 @@ public class SmartphoneController {
    
      // conversion de la date
      SimpleDateFormat dateformat = new SimpleDateFormat("yyyy-MM-dd");
-     Date dateCreation = dateformat.parse(String.valueOf(date));
-     smartphone.setDate(dateCreation);
+     Date date = dateformat.parse(String.valueOf(date));
+     smartphone.setDate(date);
      smartphoneService.updateSmartphone(smartphone);
      List<Smartphone> smarts = smartphoneService.getAllSmartphones();
      modelMap.addAttribute("smartphones", smarts);

@@ -1,8 +1,9 @@
 package com.rayen.smartphones.service;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
 import com.rayen.smartphones.entities.Smartphone;
 import com.rayen.smartphones.repos.SmartphoneRepository;
 @Service
@@ -40,5 +41,10 @@ public class SmartphoneServiceImpl implements SmartphoneService{
     public List<Smartphone> getAllSmartphones() {
         return smartphoneRepository.findAll();
     }
+        @Override 
+    public Page<Smartphone> getAllSmartphonesParPage(int page, int size) { 
+    return smartphoneRepository.findAll(PageRequest.of(page, size)); 
+    }
+
 
 }
